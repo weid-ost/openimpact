@@ -1,0 +1,23 @@
+# Add your **development** dependencies here.
+# These are the tools you need to prepare a release, generate the documentation, run tests, etc..
+# Do not pin them (fix the version) unless is absolutely necessary.
+
+# required
+pyaml
+rich
+
+# documentation
+Sphinx
+sphinx_gallery
+sphinxcontrib-autoyaml
+sphinx-autodoc-defaultargs
+sphinx-autodoc-typehints
+
+# code style
+black
+
+# User utils
+ipython
+
+# your dependencies
+

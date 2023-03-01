@@ -1,0 +1,40 @@
+# Temporary files
+*.log
+
+# Locked files
+*.~*
+
+# Ignore hidden python files
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+*.py[cod]
+*$py.class
+**/*.egg-info/
+
+# Pycharm folders
+venv
+.idea
+.venv
+
+# Jupyter Notebook
+**/.ipynb_checkpoints
+
+# Ignore latex files
+*.log
+*.aux
+*.bbl
+*.out
+*.blg
+
+# Ignore ppt*, doc*, pdf
+*.ppt*
+*.pdf
+*.doc*
+
+# Ignore build folders
+**/build
+# Sphinx
+doc/source/auto_*
+doc/source/gen_*
+
+
