@@ -10,9 +10,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import collections
 import os
-import sys
 import re
+import sys
 from pathlib import Path
 
 import yaml
@@ -21,7 +22,7 @@ src_path = Path("../..").resolve()
 sys.path.insert(0, str(src_path))
 # -- Project information -----------------------------------------------------
 metadata_name = "version.yaml"
-metadata_filepath = src_path / "openimpact-deploy" / metadata_name
+metadata_filepath = src_path / "openimpact_deploy" / metadata_name
 if not metadata_filepath.exists():
     raise RuntimeError(f"Configuration file {metadata_filepath} found!")
 
@@ -40,7 +41,9 @@ release = meta_["version"]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 rendermath = (
-    "sphinx.ext.mathjax" if "MATHIMG" not in os.environ else "sphinx.ext.imgmath"
+    "sphinx.ext.mathjax"
+    if "MATHIMG" not in os.environ
+    else "sphinx.ext.imgmath"
 )
 
 extensions = [
@@ -138,15 +141,14 @@ imgmath_use_preview = True
 imgmath_font_size = 14
 # -- Options for Default arguments extension ----------------------------------
 rst_prolog = (
-    '''
+    """
 .. |default| raw:: html
 
-    <div class="default-value-section">'''
+    <div class="default-value-section">"""
     + ' <span class="default-value-label">Default:</span>'
 )
 # -- Post process ------------------------------------------------------------
 ## Do not show default documentation of named tuples
-import collections
 
 
 def remove_namedtuple_attrib_docstring(app, what, name, obj, skip, options):

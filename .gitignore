@@ -37,4 +37,8 @@ venv
 doc/source/auto_*
 doc/source/gen_*
 
+.coverage
 
+
+test.json
+graph_models/

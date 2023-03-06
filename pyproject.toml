@@ -1,3 +1,63 @@
 [build-system]
-requires = ["setuptools", "wheel", "pyaml"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openimpact_deploy"
+readme = "README.rst"
+requires-python = ">=3.10.6"
+authors = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
+maintainers = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
+dependencies = ["fastapi[all]", "pandas", "numpy"]
+description = "Placeholder for brief description"
+copyright = "OST Ostschweizer Fachhochschule"
+license = { file = "LICENSE" }
+dynamic = ["version"]
+
+[project.urls]
+Source = "https://gitlab.ost.ch/windenergyatost/openimpact/deployment"
+
+
+[project.optional-dependencies]
+dev = [
+  "black>=22.10.0",
+  "pytest>=7.2.0",
+  "pytest-cov>=4.0.0",
+  "ruff>=0.0.254",
+  "hatch",
+]
+
+[tool.ruff]
+ignore = ["E501"]
+select = ["E", "F", "I", "W"]
+line-length = 79
+fixable = ["I"]
+exclude = [".env", ".venv", "venv", "notebooks"]
+show-source = true
+
+[tool.black]
+line-length = 79
+extend-exclude = '''
+/(
+  | .env
+  | .venv
+  | venv
+  | notebooks
+)/
+'''
+
+[tool.hatch.version]
+path = "src/openimpact_deploy/__about__.py"
+
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/openimpact_deploy --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = ["src/openimpact_deploy/__about__.py"]
+
+[project.scripts]
+predict = "openimpact_deploy.predict:predict"
+predict_stream = "openimpact_deploy.predict:predict_stream"
