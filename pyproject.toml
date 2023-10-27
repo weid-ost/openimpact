@@ -3,12 +3,26 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "openimpact_deploy"
+name = "openimpact"
 readme = "README.rst"
-requires-python = ">=3.10.6"
+requires-python = ">=3.11"
 authors = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
 maintainers = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
-dependencies = ["fastapi[all]", "pandas", "numpy"]
+dependencies = [
+  "pandas",
+  "numpy",
+  "tomli",
+  "haversine",
+  "scipy",
+  "networkx",
+  "pyproj",
+  "mlflow",
+  "torch",
+  "torch-geometric",
+  "dynaconf",
+  "lightning",
+  "scikit-optimize"
+]
 description = "Placeholder for brief description"
 copyright = "OST Ostschweizer Fachhochschule"
 license = { file = "LICENSE" }
@@ -26,6 +40,9 @@ dev = [
   "ruff>=0.0.254",
   "hatch",
 ]
+api = ["fastapi[all]", "pydantic", "requests", "uvicorn[standard]"]
+
+graphgym = ["yacs", "ogb", "tensorboard", "tensorboardX"]
 
 [tool.ruff]
 ignore = ["E501"]
@@ -47,17 +64,17 @@ extend-exclude = '''
 '''
 
 [tool.hatch.version]
-path = "src/openimpact_deploy/__about__.py"
+path = "openimpact/__about__.py"
 
 [tool.hatch.envs.default.scripts]
-cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=src/openimpact_deploy --cov=tests {args}"
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=openimpact --cov=tests {args}"
 no-cov = "cov --no-cov {args}"
 
 [tool.coverage.run]
 branch = true
 parallel = true
-omit = ["src/openimpact_deploy/__about__.py"]
+omit = ["openimpact/__about__.py"]
 
 [project.scripts]
-predict = "openimpact_deploy.predict:predict"
-predict_stream = "openimpact_deploy.predict:predict_stream"
+predict = "openimpact.predict:predict"
+predict_stream = "openimpact.predict:predict_stream"

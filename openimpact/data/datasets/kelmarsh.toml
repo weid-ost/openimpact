@@ -1,0 +1,31 @@
+[csv]
+encoding = "utf8"
+sep = ","
+header = 0
+
+[index]
+name-from-source = "# Date and time"
+time-zone-from-source = "UTC"
+name = "datetime"
+unit = "ns"
+time-zone = "UTC"
+
+[[columns]]
+name-from-source = "Wind direction (°)"
+name = "wind_direction"
+
+[[columns]]
+name-from-source = "Nacelle position (°)"
+name = "nacelle_direction"
+
+[[columns]]
+name-from-source = "Wind speed (m/s)"
+name = "wind_speed"
+
+[[columns]]
+name-from-source = "Power (kW)"
+name = "power"
+
+[[columns]]
+name-from-source = "Wind turbine ID"
+name = "wt_id"

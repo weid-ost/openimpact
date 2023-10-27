@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Utility functions"""
+"""Functions for describing wind farm layouts and creating wind farm representations"""
 
 from pathlib import Path
 import pickle
 from typing import Union, Any
 import pandas as pd
-import yaml
+import tomllib
 
 
-def read_config(file_path):
-    with open(file_path, "r") as stream:
-        config = yaml.load(stream, yaml.Loader)
-
+def read_config(file_path: str | Path) -> dict:
+    with open(file_path, "rb") as f:
+        config = tomllib.load(f)
     return config
 
 
@@ -19,7 +18,7 @@ def save_data(df: pd.DataFrame, filename: Union[str, Path]):
     df.to_pickle(f"{filename}.pkl")
 
 
-def load_data(filename: Union[str, Path]) -> pd.DataFrame:
+def load_data(filename: Union[str, Path]) -> pd.DataFrame | pd.Series:
     return pd.read_pickle(f"{filename}.pkl")
 
 

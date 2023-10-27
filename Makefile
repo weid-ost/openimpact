@@ -10,6 +10,14 @@ install:
 install-dev: install
 	python -m pip install -e ".[dev]"
 
+## Install for development 
+install-api: install
+	python -m pip install -e ".[api]"
+
+## Install for development 
+install-graphgym: install
+	python -m pip install -e ".[graphgym]"
+
 ## Build sdist and wheel
 build:
 	hatch build

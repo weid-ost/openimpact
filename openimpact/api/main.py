@@ -4,11 +4,10 @@ from typing import Any
 from fastapi import FastAPI
 from pydantic import BaseModel, conlist
 
-from openimpact_deploy.utils import load_pickle
+from .utils import load_pickle
 import numpy as np
 
 app = FastAPI()
-
 
 fake_items_db = [
     {"item_name": "Foo"},
@@ -32,7 +31,7 @@ class Item(BaseModel):
 class Input(BaseModel):
     wind_speed: float
     wind_direction: float
-    yaw_misalignment: conlist(float, min_items=6, max_items=6)
+    yaw_misalignment: conlist(float, min_length=6, max_length=6)
 
 
 class Output(BaseModel):
