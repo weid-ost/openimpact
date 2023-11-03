@@ -179,3 +179,7 @@ def match_group_count(
 ) -> pd.DataFrame:
     grouped = df.groupby(by)
     return grouped.filter(lambda x: x[count_col].count() == match)
+
+
+def rename_labels(s: pd.Series, mapping_dict: dict) -> pd.Series:
+    return s.apply(lambda x: mapping_dict[x])

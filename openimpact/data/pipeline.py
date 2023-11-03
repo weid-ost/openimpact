@@ -14,8 +14,10 @@ from openimpact.data.preprocessing import (
     filter_bin,
     filter_power,
     match_group_count,
+    rename_labels,
 )
 from openimpact.model.features import add_freestream_conditions
+from openimpact.data.datasets.kelmarsh import KelmarshDataset
 
 
 def kelmarsh_pipeline():
@@ -66,19 +68,36 @@ def kelmarsh_pipeline():
 
     df = match_group_count(df, by="datetime", count_col="wt_id", match=6)
 
-    df.to_csv(download_path / "cleaned.csv")
-
     # Feature engineering
     # Here we need to make sure to create the features that are needed for the PyTorch Geometric Dataset
     df = add_freestream_conditions(df)
-    df.to_csv(download_path / "features.csv")
+
+    wt_mapping = {
+        228: "KWF1",
+        229: "KWF2",
+        230: "KWF3",
+        231: "KWF4",
+        232: "KWF5",
+        233: "KWF6",
+    }
+    df["wt_id"] = rename_labels(df["wt_id"], wt_mapping)
+
+    data_path = download_path / "featured_data.csv"
+
+    save_dataframe(df, data_path)
+
+    windfarm_static_path = download_path / "Kelmarsh_WT_static.csv"
 
     # Next we need to create a PyTorch Geometric Dataset
+    KelmarshDataset(
+        "dataset_test",
+        data_path=data_path,
+        windfarm_static_path=windfarm_static_path,
+        features=["u_g", "v_g", "nacelle_direction"],
+        target="wind_speed",
+        wt_col="wt_id",
+    )
 
 
-def main():
-    kelmarsh_pipeline()
-
-
-if __name__ == "__main__":
-    main()
+def save_dataframe(df: pd.DataFrame, path: str | Path) -> None:
+    df.to_csv(path)

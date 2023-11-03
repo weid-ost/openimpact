@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import FastAPI
 from pydantic import BaseModel, conlist
 
-from .utils import load_pickle
+from openimpact.utils import load_pickle
 import numpy as np
 
 app = FastAPI()

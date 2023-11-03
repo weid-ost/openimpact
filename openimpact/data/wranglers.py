@@ -28,7 +28,7 @@
 from pathlib import Path
 from typing import Iterable
 import pandas as pd
-from openimpact.data.utils import read_config
+from openimpact.utils import read_config
 
 
 def to_openimpact(df: pd.DataFrame, *, column_mapping: dict) -> pd.DataFrame:

@@ -78,3 +78,5 @@ omit = ["openimpact/__about__.py"]
 [project.scripts]
 predict = "openimpact.predict:predict"
 predict_stream = "openimpact.predict:predict_stream"
+kelmarsh_pipeline = "openimpact.data.pipeline:kelmarsh_pipeline"
+train_gnn = "openimpact.model.train:train_gnn"

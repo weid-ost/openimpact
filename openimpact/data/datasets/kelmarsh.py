@@ -1,15 +1,12 @@
 from pathlib import Path
 from typing import Callable, Optional
-from zipfile import ZipFile
 
-import numpy as np
 import pandas as pd
 import torch
 from torch_geometric.data import InMemoryDataset
 from torch_geometric.utils.convert import from_networkx
 
-from openimpact.data.download import zenodo_download
-from openimpact.data.graph_gen import (
+from .graph_gen import (
     create_graph,
     update_states,
 )
@@ -19,49 +16,38 @@ class KelmarshDataset(InMemoryDataset):
     def __init__(
         self,
         root,
+        data_path: str | Path,
+        windfarm_static_path: str | Path,
+        features: list[str],
+        target: str,
+        wt_col: str,
         transform: Optional[Callable] = None,
         pre_transform: Optional[Callable] = None,
         pre_filter: Optional[Callable] = None,
     ):
+        self.data_path = data_path
+        self.windfarm_static_path = windfarm_static_path
+
+        self.features = features
+        self.target = target
+        self.wt_col = wt_col
+
         super().__init__(root, transform, pre_transform, pre_filter)
         self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
-    def raw_file_names(self) -> list[str]:
-        return ["Kelmarsh_WT_static.csv", "Kelmarsh_SCADA_2016_3082.zip"]
+    def raw_file_names(self) -> list[str | Path]:
+        return [self.windfarm_static_path, self.data_path]
 
     @property
     def processed_file_names(self):
         return "data.pt"
 
-    def download(self):
-        """Downloads the Kelmarsh data from Zenodo
-        Main URL: https://zenodo.org/record/7212475
-        API URL: https://zenodo.org/api/records/7212475
-        """
-        zenodo_download(
-            7212475,
-            self.raw_dir,
-            force_download=False,
-            include=self.raw_file_names,
-        )
-
     def process(self):
-        df_static = pd.read_csv(
-            f"{self.raw_dir}/Kelmarsh_WT_static.csv", compression="gzip"
-        )
-
-        wt_mapping = {
-            "KWF1": 228,
-            "KWF2": 229,
-            "KWF3": 230,
-            "KWF4": 231,
-            "KWF5": 232,
-            "KWF6": 233,
-        }
+        df_static = pd.read_csv(self.windfarm_static_path)
 
         lat_lon_dict = {
-            wt_mapping[wt]: (lat, lon)
+            wt: (lat, lon)
             for wt, lat, lon in df_static[
                 ["Alternative Title", "Latitude", "Longitude"]
             ].to_records(index=False)
@@ -69,40 +55,32 @@ class KelmarshDataset(InMemoryDataset):
 
         DG = create_graph(lat_lon_dict, max_dist=1.0)
 
-        scada_files = [
-            f"{self.raw_dir}/{name}"
-            for name in self.raw_file_names
-            if "SCADA" in name
-        ]
+        df_ts = pd.read_csv(self.data_path, index_col="datetime")
 
-        df_ts = _read_scada(scada_files)
+        df_states = df_ts[[self.wt_col] + self.features + [self.target]]
 
-        state_columns = [
-            "Wind speed (m/s)",
-            "Wind direction (°)",
-            "Nacelle position (°)",
-        ]
-        target_col = ["Power (kW)"]
-        df_states = df_ts[["wt_id"] + state_columns + target_col].copy()
-
-        times = np.random.choice(df_states.index.unique(), 300)
+        times = df_states.index.unique()
 
         graph_list = []
 
         for time in times:
-            for state_name in state_columns:
-                df_state = df_states.loc[time][["wt_id", state_name]]
+            for state_name in self.features:
+                df_state = df_states.loc[time][[self.wt_col, state_name]]
                 states = df_state.to_records(index=False)
 
                 DG = update_states(DG, state_name, states)
 
-            df_target = df_states.loc[time][["wt_id", target_col[0]]]
+            df_target = df_states.loc[time][[self.wt_col, self.target]]
             target = df_target.to_records(index=False)
             DG = update_states(DG, "y", target)
 
             graph_list.append(DG)
 
-        edge_attrs = ["dist", "dir"]
+        # TODO: Get rid of coupling somehow. create_graph() creates x_dist and y_dist
+        # and returns an nx.Graph containing those in the dict of attribute _adj.
+        # Maybe there is a better way to set them here or figure out what their
+        # names are based on the nx.Graph instance.
+        edge_attrs = ["x_dist", "y_dist"]
 
         data_list = []
         for graph in graph_list:
@@ -111,7 +89,7 @@ class KelmarshDataset(InMemoryDataset):
             )
             data = from_networkx(
                 graph,
-                group_node_attrs=state_columns,
+                group_node_attrs=self.features,
                 group_edge_attrs=edge_attributes,
             )
 
@@ -127,39 +105,3 @@ class KelmarshDataset(InMemoryDataset):
             data_list.append(data)
 
         torch.save(self.collate(data_list), self.processed_paths[0])
-
-
-def _scada_zip_to_dataframe(filename: str | Path):
-    with ZipFile(filename) as myzip:
-        data_files = [f for f in myzip.namelist() if "Turbine_Data" in f]
-
-        concat = []
-        for f in data_files:
-            path = Path(f)
-            wt_id = int(path.stem.split("_")[-1])
-
-            with myzip.open(f, "r") as wt:
-                df_tmp = (
-                    pd.read_csv(wt, skiprows=9)
-                    .rename(columns={"# Date and time": "Datetime"})
-                    .set_index("Datetime")
-                )
-                df_tmp["wt_id"] = wt_id
-                df_tmp = df_tmp
-
-                concat.append(df_tmp)
-
-    return pd.concat(concat)
-
-
-def _read_scada(files: list[str | Path]):
-    concat = []
-    for filename in files:
-        concat.append(_scada_zip_to_dataframe(filename))
-
-    return pd.concat(concat)
-
-
-if __name__ == "__main__":
-    dataset = KelmarshDataset("kelmarsh_test")
-    print(dataset[0])
