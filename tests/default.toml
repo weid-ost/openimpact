@@ -1,0 +1,28 @@
+[csv]
+encoding = "utf8"
+sep = ","
+header = 0
+
+[index]
+name-from-source = "# Date and time"
+time-zone-from-source = "UTC"
+name = "datetime"
+unit = "ns"
+time-zone = "UTC"
+
+[[columns]]
+name-from-source = "Wind speed"
+name = "wind_speed"
+
+[[columns]]
+name-from-source = "Power"
+name = "power"
+
+[[columns]]
+name-from-source = "Wind turbine ID"
+name = "wt_id"
+
+[dataset]
+name = "default_dataset"
+data = "default_data.csv"
+static = "default_static.csv"

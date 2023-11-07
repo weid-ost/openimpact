@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """Functions for describing wind farm layouts and creating wind farm representations"""
 
+import os
 from pathlib import Path
 import pickle
-from typing import Union, Any
+from typing import Union, Any, TypeVar
 import pandas as pd
 import tomllib
+
+T = TypeVar("T")
 
 
 def read_config(file_path: str | Path) -> dict:
@@ -35,3 +38,7 @@ def load_pickle(filename: Union[str, Path]) -> Any:
     with open(f"{filename}", "rb") as f:
         obj = pickle.load(f)
     return obj
+
+
+def getenv(key: str, default: T = 0) -> T:
+    return type(default)(os.getenv(key, default))

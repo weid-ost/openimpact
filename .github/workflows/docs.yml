@@ -1,0 +1,30 @@
+name: Build documentation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    name: Sphinx
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+    - name: Install dependencies
+      run: pip install -e '.[docs]'
+    - name: Build documentation
+      run: cd docs && make html
+    - name: Create artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: DocumentationHTML
+        path: docs/build/html/
+    - name: Publish documentation
+      run: cp -r docs/build/html/* docs/

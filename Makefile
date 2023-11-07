@@ -18,6 +18,8 @@ install-api: install
 install-graphgym: install
 	python -m pip install -e ".[graphgym]"
 
+install-docs:
+	python -m pip install -e ".[docs]"
 ## Build sdist and wheel
 build:
 	hatch build

@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 
-def kelmarsh_raw_data(download_path: str | Path) -> list[Path]:
+def kelmarsh_raw_data(download_path: str | Path) -> None:
     download_path = Path(download_path)
 
     zenodo_download(
@@ -24,11 +24,6 @@ def kelmarsh_raw_data(download_path: str | Path) -> list[Path]:
         )
 
         df.to_csv(raw_csv, index=False)
-
-    return [
-        download_path / "kelmarsh_raw.csv",
-        download_path / "Kelmarsh_WT_static.csv",
-    ]
 
 
 def _scada_zip_to_dataframe(

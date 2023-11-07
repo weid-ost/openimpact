@@ -35,25 +35,25 @@ def to_openimpact(df: pd.DataFrame, *, column_mapping: dict) -> pd.DataFrame:
     """Transform dataframe containing raw data to an
     OpenIMPACT dataframe.
 
-    To be used with the OpenIMPACT data pipeline.
+        To be used with the OpenIMPACT data pipeline.
 
-    Parameters
-    ----------
-    df:
-        DataFrame
+        Parameters
+        ----------
+        df:
+            DataFrame
 
-    column_mapping:
-        Config dictionary based on a TOML file, which contains the columns of interest
-        as well as the various column levels, as defined in the :ref:`OpenIMPACT data manifest <data_manifest>`
+        column_mapping:
+            Config dictionary based on a TOML file, which contains the columns of interest
+            as well as the various column levels, as defined in the :ref:`OpenIMPACT data manifest <data_manifest>`
 
-    Returns
-    -------
-    OpenIMPACT dataframe
-        The OpenIMPACT dataframe is defined in the OpenIMPACT data manifest and
-        is used as a data interface for the OpenIMPACT data pipeline
+        Returns
+        -------
+        OpenIMPACT dataframe
+            The OpenIMPACT dataframe is defined in the OpenIMPACT data manifest and
+            is used as a data interface for the OpenIMPACT data pipeline
 
-    Example
-    --------
+        Example
+        --------
 
     """
 
@@ -104,6 +104,10 @@ def get_index_fmt(cfg_file: str | Path | None = None) -> dict:
         "dt_format": cfg["unit"],
         "tz_mapping": (cfg["time-zone-from-source"], cfg["time-zone"]),
     }
+
+
+def get_dataset(config_path: str | Path | None = None) -> dict:
+    return _get_cfg_field("dataset", config_path)
 
 
 def read_raw(

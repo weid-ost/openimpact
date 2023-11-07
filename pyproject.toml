@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "openimpact"
 readme = "README.rst"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 authors = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
 maintainers = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
 dependencies = [
@@ -24,7 +24,7 @@ dependencies = [
   "scikit-optimize"
 ]
 description = "Placeholder for brief description"
-copyright = "OST Ostschweizer Fachhochschule"
+copyright = "Florian Hammer"
 license = { file = "LICENSE" }
 dynamic = ["version"]
 
@@ -43,6 +43,8 @@ dev = [
 api = ["fastapi[all]", "pydantic", "requests", "uvicorn[standard]"]
 
 graphgym = ["yacs", "ogb", "tensorboard", "tensorboardX"]
+
+docs = ["sphinx", "furo"]
 
 [tool.ruff]
 ignore = ["E501"]
