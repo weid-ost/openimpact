@@ -1,5 +1,5 @@
 <div align="center">
-<img src="docs/logo.png" alt="OpenIMPACT logo" width="150" height="auto">
+<a href="https://www.ost.ch/en/details/projects/openimpact"><img src="docs/logo.png" alt="OpenIMPACT logo" width="150" height="auto"></a>
 </div>
 
 
