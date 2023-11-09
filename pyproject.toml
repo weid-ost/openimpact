@@ -77,6 +77,9 @@ branch = true
 parallel = true
 omit = ["openimpact/__about__.py"]
 
+[tool.pytest.ini_options]
+filterwarnings = ["ignore", "default:::openimpact"]
+
 [project.scripts]
 predict = "openimpact.predict:predict"
 predict_stream = "openimpact.predict:predict_stream"

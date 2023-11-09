@@ -1,3 +1,4 @@
+import shutil
 import pytest
 import pandas as pd
 import numpy as np
@@ -64,3 +65,17 @@ def kelmarsh_dataset():
     sample_idx = np.random.choice(idx, size=sample_size, replace=False)
 
     return dataset.copy(sample_idx)
+
+
+@pytest.fixture
+def scaler_path(tmp_path):
+    scaler_path = tmp_path / "scaler"
+    scaler_path.mkdir()
+    return scaler_path
+
+
+@pytest.fixture
+def log_dir(tmp_path):
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir()
+    return log_dir

@@ -1,17 +1,15 @@
 import pytest
 from openimpact.model.train import train_gnn
-from pickle import dump, load
+from pickle import load
 
 import lightning as L  # type: ignore
-from sklearn.preprocessing import StandardScaler  # type: ignore
 from torch_geometric.loader import DataLoader  # type: ignore
-from lightning.pytorch.loggers import CSVLogger
 
-from openimpact.data.datasets import load_dataset, train_test_split
+from openimpact.data.datasets import train_test_split
 from openimpact.model.gnn import FarmGNN
 
 
-@pytest.fixture
+@pytest.fixture(scope="class")
 def gnn_params():
     return {
         "lr": 0.002443162103996048,
@@ -23,52 +21,60 @@ def gnn_params():
     }
 
 
-def test_model_init(gnn_params):
-    model = FarmGNN(3, 1, **gnn_params)
-    assert model is not None
+class TestGNN:
+    def test_model_init(self, gnn_params):
+        model = FarmGNN(3, 1, **gnn_params)
+        assert model is not None
 
+    def test_training_step(self, gnn_params, kelmarsh_dataset):
+        train_data, val_data = train_test_split(kelmarsh_dataset)
 
-# def test_model_forward():
-#     model = FarmGNN(2, 1, 1, 1, 1)
-#     input_data = torch.randn((1, 2))
-#     output = model(input_data)
-#     assert output is not None
+        assert train_data is not None
+        assert val_data is not None
 
+        batch_size = 1
 
-# def test_lightning_module_training_step():
-#     # Test the training step
-#     model = MyLightningModule()
-#     batch = next(iter(dataloader))  # Replace with your dataloader
-#     loss = model.training_step(batch, 0)
-#     assert loss is not None
-#     assert 'loss' in loss
-#
-# Test training step
-def test_training_step(gnn_params, kelmarsh_dataset):
-    train_data, val_data = train_test_split(kelmarsh_dataset)
+        train_loader = DataLoader(
+            train_data, batch_size=batch_size, num_workers=1
+        )
+        val_loader = DataLoader(val_data, batch_size=batch_size, num_workers=1)
 
-    scaler = StandardScaler()
-    scaler.fit(train_data.x.numpy())
+        assert train_loader is not None
+        assert val_loader is not None
 
-    batch_size = 1
+        dim_in = train_data[0].num_node_features
+        dim_out = (
+            1 if len(train_data[0].y.shape) == 1 else train_data[0].y.shape[1]
+        )
 
-    train_loader = DataLoader(train_data, batch_size=batch_size)
-    val_loader = DataLoader(val_data, batch_size=batch_size)
+        with open("tests/scaler/GNN.pkl", "rb") as f:
+            scaler = load(f)
 
-    dim_in = train_data[0].num_node_features
-    dim_out = (
-        1 if len(train_data[0].y.shape) == 1 else train_data[0].y.shape[1]
-    )
+        model = FarmGNN(
+            dim_in=dim_in, dim_out=dim_out, scaler=scaler, **gnn_params
+        )
 
-    with open("tests/scaler/GNN.pkl", "rb") as f:
-        scaler = load(f)
+        max_epochs = 1
+        trainer = L.Trainer(max_epochs=max_epochs, logger=False)
+        trainer.fit(
+            model=model,
+            train_dataloaders=train_loader,
+            val_dataloaders=val_loader,
+        )
 
-    model = FarmGNN(
-        dim_in=dim_in, dim_out=dim_out, scaler=scaler, **gnn_params
-    )
+    def test_train_gnn(
+        self, kelmarsh_dataset, gnn_params, log_dir, scaler_path
+    ):
+        train_params = {
+            "batch_size": 1,
+            "max_epochs": 1,
+        }
 
-    max_epochs = 1
-    trainer = L.Trainer(max_epochs=max_epochs, logger=None)
-    trainer.fit(
-        model=model, train_dataloaders=train_loader, val_dataloaders=val_loader
-    )
+        train_gnn(
+            dataset=kelmarsh_dataset,
+            gnn_params=gnn_params,
+            train_params=train_params,
+            scaler_path=scaler_path,
+            experiment="GNN_test",
+            log_dir=log_dir,
+        )
