@@ -1,0 +1,24 @@
+
+name: Unit tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  testing:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: make install-dev
+    - name: Run pytest
+      run: pytest
