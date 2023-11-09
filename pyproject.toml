@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "openimpact"
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
 maintainers = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]

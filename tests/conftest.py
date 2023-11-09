@@ -54,6 +54,13 @@ def clean_dataframe(openimpact_dataframe):
     return df.copy(deep=True)
 
 
-@pytest.fixture
+# TODO: Reduce the size of the dataset
+@pytest.fixture(scope="module")
 def kelmarsh_dataset():
-    return KelmarshDataset("kelmarsh_test")
+    dataset = KelmarshDataset("tests/kelmarsh_test")
+
+    idx = np.arange(len(dataset))
+    sample_size = 10
+    sample_idx = np.random.choice(idx, size=sample_size, replace=False)
+
+    return dataset.copy(sample_idx)

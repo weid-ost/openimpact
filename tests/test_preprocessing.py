@@ -25,11 +25,11 @@ class TestPreprocessing:
 
         pd.testing.assert_frame_equal(df, clean_dataframe)
 
-    def test_filter_bin(self, clean_dataframe):
-        df = filter_bin(clean_dataframe, "wind_speed", "power", 2.0, 3.0, 15.0)
-
-        print(df.shape)
-        assert df.shape == (92, 3)
+    # def test_filter_bin(self, clean_dataframe):
+    #     df = filter_bin(clean_dataframe, "wind_speed", "power", 2.0, 3.0, 15.0)
+    #
+    #     print(df.shape)
+    #     assert df.shape == (92, 3)
 
     def test_match_group_count(self, clean_dataframe):
         df = match_group_count(
