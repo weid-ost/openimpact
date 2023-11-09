@@ -6,7 +6,6 @@ from openimpact.data.wranglers import (
     get_dataset,
 )
 from openimpact.utils import read_config
-from pathlib import Path
 import pytest
 
 
@@ -52,7 +51,3 @@ class TestConfig:
         }
 
         assert dataset == get_dataset()
-
-
-class TestWrangler:
-    set_default_cfg("tests/default.toml")

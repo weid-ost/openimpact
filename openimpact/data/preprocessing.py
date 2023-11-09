@@ -92,7 +92,7 @@ def filter_power(
 
 
 def filter_bin(
-    df,
+    data,
     ws_col: str,
     p_col: str,
     sigma: float,
@@ -101,6 +101,8 @@ def filter_bin(
     bins=40,
 ) -> pd.DataFrame:
     windspeeds = np.linspace(cut_in, cut_out, bins)
+
+    df = data.copy()
 
     df["bins"] = pd.cut(df[ws_col], bins=windspeeds)
 
