@@ -105,23 +105,3 @@ if __name__ == "__main__":
     set_default_cfg(default_cfg_path)
 
     data_pipeline()
-
-    gnn_params = {
-        "lr": 0.002443162103996048,
-        "weight_decay": 1e-5,
-        "dim_inner": 312,
-        "num_layers": 4,
-        "att_heads": 1,
-        "h_dim": 22,
-    }
-    train_params = {
-        "batch_size": 512,
-        "max_epochs": 2,
-    }
-
-    dataset = get_dataset()
-    train_gnn(
-        dataset_dir=dataset["name"],
-        gnn_params=gnn_params,
-        train_params=train_params,
-    )
