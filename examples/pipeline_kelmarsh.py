@@ -87,7 +87,7 @@ def data_pipeline():
     windfarm_static_path = download_path / dataset["static"]
     # Next we need to create a PyTorch Geometric Dataset
     KelmarshDataset(
-        dataset["name"],
+        dataset["root_dir"],
         data_path=data_path,
         windfarm_static_path=windfarm_static_path,
         features=["u_g", "v_g", "nacelle_direction"],

@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     dataset = get_dataset()
     kelmarsh_data = KelmarshDataset(
-        dataset["name"],
+        dataset["root"],
         features=["u_g", "v_g", "nacelle_direction"],
         target="wind_speed",
         wt_col="wt_id",

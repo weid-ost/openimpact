@@ -31,6 +31,6 @@ name-from-source = "Wind turbine ID"
 name = "wt_id"
 
 [dataset]
-name = "kelmarsh_test"
+root_dir = "kelmarsh_test"
 data = "featured_data.csv"
 static = "Kelmarsh_WT_static.csv"

@@ -21,7 +21,8 @@ dependencies = [
   "torch-geometric",
   "dynaconf",
   "lightning",
-  "scikit-optimize"
+  "scikit-optimize",
+  "seaborn"
 ]
 description = "Placeholder for brief description"
 copyright = "Florian Hammer"

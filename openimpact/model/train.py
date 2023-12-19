@@ -8,7 +8,7 @@ from torch_geometric.loader import DataLoader  # type: ignore
 from lightning.pytorch.loggers import CSVLogger
 
 from openimpact.data.datasets import train_test_split
-from openimpact.model.gnn import FarmGNN
+from openimpact.model.gnn import FarmGNN, FarmGNN3, FarmGAT
 
 
 def train_gnn(
@@ -37,8 +37,23 @@ def train_gnn(
         1 if len(train_data[0].y.shape) == 1 else train_data[0].y.shape[1]
     )
 
-    model = FarmGNN(
-        dim_in=dim_in, dim_out=dim_out, scaler=scaler, **gnn_params
+    h_dims = [256, 256, 256]
+    heads = [8, 8, 8]
+    concats = [True, True, True]
+    edge_dims = [2, None, None]
+    skip_connections = [True, True, True]
+    model = FarmGAT(
+        dim_in,
+        dim_out,
+        h_dims,
+        heads,
+        concats,
+        edge_dims,
+        skip_connections,
+        512,
+        1,
+        scaler=scaler,
+        **gnn_params,
     )
 
     logger = CSVLogger(log_dir, f"{experiment}")

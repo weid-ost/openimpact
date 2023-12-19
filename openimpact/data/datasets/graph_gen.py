@@ -7,6 +7,8 @@ from typing import Any
 import networkx as nx
 import numpy as np
 
+from openimpact.postpro import get_wind_direction
+
 from .distance import (
     azimuth_matrix_from_dict,
     distance_matrix_from_dict,
@@ -28,10 +30,11 @@ def create_graph(lat_lon_dict: dict, max_dist: float = 1e12) -> nx.Graph:
 
         node_x_dirs = df_x[i][out_edges]
         node_y_dirs = df_y[i][out_edges]
+        dists = df_dist[i][out_edges]
 
         node_dicts = [
-            {"x_dist": x, "y_dist": y}
-            for x, y in zip(node_x_dirs, node_y_dirs)
+            {"x_dist": x, "y_dist": y, "dist": d}
+            for x, y, d in zip(node_x_dirs, node_y_dirs, dists)
         ]
         dod[i] = dict(zip(out_edges, node_dicts))
 
@@ -50,6 +53,8 @@ def update_positions(
     g = copy.deepcopy(graph)
     for name, x, y in positions:
         g.nodes[name]["pos"] = (x, y)
+        g.nodes[name]["xi"] = x
+        g.nodes[name]["yi"] = y
     return g
 
 
@@ -65,13 +70,19 @@ def update_states(
 def filter_wd(
     graph: nx.Graph, tol: float = 15.0, wd_col: str = "wind_direction"
 ) -> nx.Graph:
-    def filter_edge(n2, n1):
-        edge_dir = graph[n1][n2].get("dir")
-        wind_dir = graph.nodes[n1].get(wd_col)
+    def filter_edge(n1, n2):
+        x_dist, y_dist = graph[n1][n2].get("x_dist"), graph[n1][n2].get(
+            "y_dist"
+        )
+        edge_dir = get_wind_direction(x_dist, y_dist)
+        # wind_dir = graph.nodes[n1].get(wd_col)
+        wind_dir = get_wind_direction(
+            graph.nodes[n1].get("u"), graph.nodes[n1].get("v")
+        )
         diff = edge_dir - wind_dir
 
         return abs((diff - 180) % 360 - 180) < tol
 
     view = nx.subgraph_view(graph, filter_edge=filter_edge)
 
-    return nx.DiGraph(view)
+    return nx.Graph(view.copy())
