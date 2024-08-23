@@ -7,6 +7,6 @@ OpenIMPACT Data Platform
 
 .. toctree::
 
-   getting_started
+   dataplatform/getting_started
    
 

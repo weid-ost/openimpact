@@ -1,14 +1,26 @@
 from pathlib import Path
 import lightning as L
 import numpy as np
+from numpy._typing import NDArray
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn import MLP, GATv2Conv
 
-__all__ = ["FarmGNN", "FarmGNN3", "FarmGAT", "get_checkpoint", "load_model"]
+__all__ = [
+    "BaseGNN",
+    "FarmGNN",
+    "FarmGNN3",
+    "FarmGAT",
+    "get_checkpoint",
+    "load_model",
+]
 
 
 class BaseGNN(L.LightningModule):
+    """
+    Base GNN
+    """
+
     def __init__(self, lr, weight_decay):
         super().__init__()
 
@@ -16,6 +28,7 @@ class BaseGNN(L.LightningModule):
         self.weight_decay
 
     def training_step(self, batch, batch_idx):
+        """Training step"""
         x, edge_index, edge_attr = batch.x, batch.edge_index, batch.edge_attr
         y_hat = self((x, edge_index, edge_attr))
         loss = F.mse_loss(y_hat, batch.y.reshape(batch.num_nodes, -1))
@@ -50,7 +63,7 @@ class BaseGNN(L.LightningModule):
         )
         return optimizer
 
-    def forward(self, x, edge_index, edge_attr=None):
+    def forward(self, x, edge_index, edge_attr):
         raise NotImplementedError()
 
 
@@ -70,10 +83,14 @@ class FarmGNN(BaseGNN):
         "batch_size": 32,
     }
 
-    Args:
-        dim_in (int): Input dimension
-        dim_out (int): Output dimension
-        **kwargs (optional): Optional additional args
+    Parameters
+    ----------
+    dim_in:
+        Input dimension
+    dim_out:
+        Output dimension
+    **kwargs:
+        Optional additional args
     """
 
     def __init__(
@@ -151,14 +168,14 @@ class FarmGNN(BaseGNN):
         return self._A
 
     @property
-    def att_matrix(self):
+    def att_matrix(self) -> NDArray:
         att_matt = np.ones((self.n_nodes, self.n_nodes)) * -1
         for edge, (i, j) in enumerate(self.att_edges):
             att_matt[i, j] = self._A[1][edge, 0]
         return att_matt
 
     @property
-    def att_edges(self):
+    def att_edges(self) -> list:
         return list(zip(self._A[0][0].numpy(), self._A[0][1].numpy()))
 
 
@@ -166,10 +183,15 @@ class FarmGNN3(BaseGNN):
     """
     Windfarm GNN model: encoder + stage + head
 
-    Args:
-        dim_in (int): Input dimension
-        dim_out (int): Output dimension
-        **kwargs (optional): Optional additional args
+
+    Parameters
+    ----------
+    dim_in:
+        Input dimension
+    dim_out:
+        Output dimension
+    **kwargs:
+        Optional additional args
     """
 
     def __init__(
@@ -241,6 +263,7 @@ class FarmGNN3(BaseGNN):
         self.save_hyperparameters()
 
     def forward(self, x, edge_index, edge_attr):
+        """ """
         # Will be used to return the V x V attention matrix, where V is the number of nodes
         self.n_nodes = x.shape[0]
 
@@ -362,6 +385,7 @@ class FarmGAT(BaseGNN):
 
 
 class GATLayer(torch.nn.Module):
+
     def __init__(
         self,
         in_channels,

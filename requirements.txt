@@ -9,7 +9,6 @@ rich
 # documentation
 Sphinx
 sphinx_gallery
-sphinxcontrib-autoyaml
 sphinx-autodoc-defaultargs
 sphinx-autodoc-typehints
 

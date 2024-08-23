@@ -5,7 +5,6 @@
     --------------------------
     Configuration file to map data source files to OpenIMPACT data format.
 
-    TODO: describe structure of each entry here
 """
 
 # Copyright (C) 2023 OST Ostschweizer Fachhochschule
@@ -26,7 +25,6 @@
 # Author: Florian Hammer <florian.hammer@ost.ch>
 
 from pathlib import Path
-from typing import Iterable
 import pandas as pd
 from openimpact.utils import read_config
 
@@ -41,10 +39,6 @@ def to_openimpact(df: pd.DataFrame, *, column_mapping: dict) -> pd.DataFrame:
         ----------
         df:
             DataFrame
-
-        column_mapping:
-            Config dictionary based on a TOML file, which contains the columns of interest
-            as well as the various column levels, as defined in the :ref:`OpenIMPACT data manifest <data_manifest>`
 
         Returns
         -------

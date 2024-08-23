@@ -20,6 +20,7 @@ install-graphgym: install
 
 install-docs:
 	python -m pip install -e ".[docs]"
+
 ## Build sdist and wheel
 build:
 	hatch build

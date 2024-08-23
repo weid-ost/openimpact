@@ -2,13 +2,14 @@ from pickle import dump
 import tomli_w
 
 import lightning as L  # type: ignore
-from farmgnn.loggers import DictLogger
+
+# from farmgnn.loggers import DictLogger
 from lightning.pytorch.loggers import TensorBoardLogger
 from sklearn.preprocessing import StandardScaler  # type: ignore
 from torch_geometric.loader import DataLoader  # type: ignore
 
-from farmgnn.datasets import load_dataset, train_test_split
-from farmgnn.gnn import FarmGNN
+# from farmgnn.datasets import load_dataset, train_test_split
+# from farmgnn.gnn import FarmGNN
 
 from skopt.space import Real, Integer
 from skopt import gp_minimize

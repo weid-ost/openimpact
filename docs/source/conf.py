@@ -10,9 +10,15 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+import re
+from pathlib import Path
+
+from sphinx_gallery.sorting import ExplicitOrder
+
+src_path = Path("../..").resolve()
+sys.path.insert(0, str(src_path))
 
 
 # -- Project information -----------------------------------------------------
@@ -30,7 +36,23 @@ release = "0.1.0"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+rendermath = (
+    "sphinx.ext.mathjax"
+    if "MATHIMG" not in os.environ
+    else "sphinx.ext.imgmath"
+)
+
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+    rendermath,
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.autosectionlabel",
+    "sphinx_gallery.gen_gallery",
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -47,13 +69,47 @@ language = "python"
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
 # -- Options for HTML output -------------------------------------------------
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "furo"
+html_theme = "sphinx_material"
+# Material theme options (see theme.conf for more information)
+html_theme_options = {
+    # Set the name of the project to appear in the navigation.
+    "nav_title": "GNNs for Wind Farms",
+    # Specify a base_url used to generate sitemap.xml. If not
+    # specified, then no sitemap will be built.
+    # "base_url": "https://project.github.io/project",
+    # Set the color and the accent color
+    "color_primary": "dark-blue",
+    "color_accent": "deep-purple",
+    # Set the repo location to get a badge with stats
+    "repo_url": "https://github.com/weid-ost/openimpact",
+    "repo_name": "openimpact",
+    # Visible levels of the global TOC; -1 means unlimited
+    "globaltoc_depth": 2,
+    # If False, expand all TOC entries
+    "globaltoc_collapse": True,
+    # If True, show hidden TOC entries
+    "globaltoc_includehidden": False,
+    "master_doc": False,
+    "nav_links": [
+        {"href": "index", "internal": True, "title": "Home"},
+    ],
+    "localtoc_label_text": "Contents",
+}
 
+pygments_style = "default"
+
+html_sidebars = {
+    "**": [
+        "logo-text.html",
+        "globaltoc.html",
+        "localtoc.html",
+        "searchbox.html",
+    ]
+}
 # html_theme_options = {
 #     # 'page_width': 'auto',
 #     # 'sidebar_width': '400px',
@@ -64,3 +120,73 @@ html_theme = "furo"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# -- Extension configuration -------------------------------------------------
+
+# -- Options for Autodoc extension ----------------------------------------------
+# This value selects if automatically documented members are sorted alphabetical
+# (value 'alphabetical'), by member type (value 'groupwise') or by source order
+# (value 'bysource'). The default is alphabetical.
+autodoc_member_order = "groupwise"
+# -- Options for Napoleon extension ----------------------------------------------
+napoleon_google_docstring = False
+napoleon_use_rtype = False
+# -- Options for autosectionlabel extension --------------------------------------
+# Make sure the target is unique
+autosectionlabel_prefix_document = True
+# -- Options for Intersphinx extension ----------------------------------------------
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "sklearn": ("https://scikit-learn.org/stable", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+}
+# -- Options for Gallery extension ----------------------------------------------
+examples_dir = "../../examples"
+sphinx_gallery_conf = {
+    # path to your example scripts
+    "examples_dirs": [
+        examples_dir,
+    ],
+    "gallery_dirs": ["auto_examples"],
+    "subsection_order": ExplicitOrder(
+        [
+            f"{examples_dir}/datasets",
+            f"{examples_dir}/gnn",
+        ]
+    ),
+    # files executed
+    "filename_pattern": f"{re.escape(os.sep)}example_",
+    # excluded files
+    "ignore_pattern": r"^(?!example_).+\.py",
+    # do not reset on each example
+    "reset_modules": (),
+    # do not capture matplotlib output
+    # https://sphinx-gallery.github.io/stable/configuration.html#prevent-capture-of-certain-classes
+    "ignore_repr_types": r"matplotlib[.](text|axes|legend|lines)",
+    # Show memory usage
+    "show_memory": True,
+    # Never fail the build on error
+    "only_warn_on_example_error": True,
+    # Some configurations can be specified within a file by adding a special comment with the pattern #
+    # sphinx_gallery_config [= value]
+    # to the example source files. To remove the comment from the rendered example set the option:
+    "remove_config_comments": True,
+}
+# -- Options for Math rendering ----------------------------------------------
+imgmath_image_format = "svg"
+imgmath_use_preview = True
+imgmath_font_size = 14
+
+# --------------- DOCTEST -------------------
+doctest_global_setup = """
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+"""
+
+
+def setup(app):
+    app.add_css_file("css/custom.css")

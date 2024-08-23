@@ -5,13 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "openimpact"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
 maintainers = [{ name = "Florian Hammer", email = "florian.hammer@ost.ch" }]
 dependencies = [
   "pandas",
   "numpy",
-  "tomli",
   "haversine",
   "scipy",
   "networkx",
@@ -19,7 +18,6 @@ dependencies = [
   "mlflow",
   "torch",
   "torch-geometric",
-  "dynaconf",
   "lightning",
   "scikit-optimize",
   "seaborn"
@@ -35,17 +33,17 @@ Source = "https://gitlab.ost.ch/windenergyatost/openimpact/deployment"
 
 [project.optional-dependencies]
 dev = [
-  "black>=22.10.0",
-  "pytest>=7.2.0",
-  "pytest-cov>=4.0.0",
-  "ruff>=0.0.254",
+  "black",
+  "pytest",
+  "pytest-cov",
+  "ruff",
   "hatch",
 ]
 api = ["fastapi[all]", "pydantic", "requests", "uvicorn[standard]"]
 
 graphgym = ["yacs", "ogb", "tensorboard", "tensorboardX"]
 
-docs = ["sphinx", "furo"]
+docs = ["Sphinx", "sphinx-material", "sphinx-gallery", "memory_profiler"]
 
 [tool.ruff]
 ignore = ["E501"]

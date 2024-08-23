@@ -13,6 +13,10 @@ from .graph_gen import (
 
 
 class KelmarshDataset(InMemoryDataset):
+    """
+    Kelmarsh Dataset
+    """
+
     def __init__(
         self,
         root,
