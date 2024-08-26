@@ -106,6 +106,8 @@ class FarmGNN(BaseGNN):
         optimizer: str = "Adam",
         scaler=None,
     ):
+        self.lr = None
+        self.weight_decay = None
         super().__init__(lr, weight_decay)
 
         self.dim_in = dim_in
