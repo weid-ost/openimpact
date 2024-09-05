@@ -59,7 +59,8 @@ class KelmarshDataset(InMemoryDataset):
 
         DG = create_graph(lat_lon_dict, max_dist=1.0)
 
-        df_ts = pd.read_csv(self.data_path, index_col="datetime")
+        df_ts = pd.read_parquet(self.data_path)
+        # df_ts.set_index("datetime", inplace=True)
 
         df_states = df_ts[[self.wt_col] + self.features + [self.target]]
 

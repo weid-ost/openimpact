@@ -315,14 +315,11 @@ class FarmGAT(BaseGNN):
         n_mlp_layers,
         lr: float = 0.005,
         weight_decay: float = 5e-4,
-        scaler=None,
     ):
         self.lr = lr
         self.weight_decay = weight_decay
 
         super().__init__(lr, weight_decay)
-
-        self.scaler = scaler
 
         self.n_nodes = None
 
@@ -374,13 +371,20 @@ class FarmGAT(BaseGNN):
 
         self.save_hyperparameters()
 
-    def forward(self, data):
+    def forward(self, data, att_weights=False):
         x, edge_index, edge_attr = data
-        if self.scaler:
-            x = torch.from_numpy(self.scaler.transform(x.numpy()))
+
+        if att_weights:
+            A = []
+            for layer in self.gat:
+                x, edge_index, edge_attr, A_ = layer(
+                    (x, edge_index, edge_attr), att_weights
+                )
+                A.append(A_)
+            x = self.mp(x)
+            return x, A
 
         x, edge_index, edge_attr = self.gat((x, edge_index, edge_attr))
-
         x = self.mp(x)
 
         return x
@@ -422,15 +426,26 @@ class GATLayer(torch.nn.Module):
                     in_channels, out_channels, bias=False
                 )
 
-    def forward(self, data):
+    def forward(self, data, att_weights=False):
         x, edge_index, edge_attr = data
         if self.edge_dim is None:
             edge_attr = None
         input = x
-        x = self.gat_conv(x, edge_index, edge_attr)
+        if att_weights:
+            x, A = self.gat_conv(
+                x, edge_index, edge_attr, return_attention_weights=att_weights
+            )
+        else:
+            x = self.gat_conv(x, edge_index, edge_attr)
+            A = None
+
         x = self.gat_post(x)
         if self.skip_con is not None:
             x += self.skip_con(input)
+
+        if A is not None:
+            return x, edge_index, edge_attr, A
+
         return x, edge_index, edge_attr
 
 

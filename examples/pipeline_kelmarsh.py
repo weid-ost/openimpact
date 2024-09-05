@@ -20,7 +20,6 @@ from openimpact.data.preprocessing import (
 from openimpact.model.features import add_freestream_conditions
 from openimpact.data.datasets.kelmarsh import KelmarshDataset
 
-from openimpact.model.train import train_gnn
 from openimpact.utils import getenv
 
 

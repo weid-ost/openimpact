@@ -38,6 +38,7 @@ dev = [
   "pytest-cov",
   "ruff",
   "hatch",
+  "jupytext"
 ]
 api = ["fastapi[all]", "pydantic", "requests", "uvicorn[standard]"]
 

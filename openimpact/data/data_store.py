@@ -7,6 +7,8 @@ import pandas as pd
 def kelmarsh_raw_data(download_path: str | Path) -> None:
     download_path = Path(download_path)
 
+    download_path.mkdir(exist_ok=True, parents=True)
+
     zenodo_download(
         8252025,
         download_path,
